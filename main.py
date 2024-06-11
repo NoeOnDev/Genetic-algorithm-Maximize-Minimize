@@ -2,7 +2,6 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import os
-import cv2
 import pandas as pd
 
 if not os.path.exists('graficas_generacion'):
@@ -46,7 +45,7 @@ def formar_parejas(poblacion):
     parejas = []
     n = len(poblacion)
     for individuo in poblacion:
-        m = random.randint(1, n)
+        m = random.randint(0, n)
         companeros = random.sample(list(poblacion), m)
         if individuo in companeros:
             companeros.remove(individuo)
@@ -89,8 +88,8 @@ def podar_poblacion(poblacion, aptitud, tamano, maximizar):
             indices_ordenados = np.argsort(-aptitud_unica)
         else:
             indices_ordenados = np.argsort(aptitud_unica)
-        poblacion_podada = poblacion_unica[indices_ordenados][:tamano]
-        aptitud_podada = aptitud_unica[indices_ordenados][:tamano]
+        poblacion_podada = poblacion_unica[:tamano]
+        aptitud_podada = aptitud_unica[:tamano]
     else:
         poblacion_podada = poblacion_unica
         aptitud_podada = aptitud_unica
@@ -190,14 +189,14 @@ def algoritmo_genetico(tamano_poblacion, tamano_maximo_poblacion, generaciones, 
     df_mejores_individuos.to_csv('mejores_individuos.csv', index=False)
 
 # Parámetros del algoritmo
-tamano_poblacion = 100
-tamano_maximo_poblacion = 200
+tamano_poblacion = 10
+tamano_maximo_poblacion = 20
 generaciones = 50
 prob_mutacion_individuo = 0.2
-prob_mutacion_gen = 0.1
-x_min = 0
+prob_mutacion_gen = 0.7
+x_min = -10
 x_max = 10
-precision = 100  # Precisión decimal
-maximizar = True  # Cambia a True si deseas maximizar la función objetivo
+precision = 100
+maximizar = False
 
 algoritmo_genetico(tamano_poblacion, tamano_maximo_poblacion, generaciones, prob_mutacion_individuo, prob_mutacion_gen, x_min, x_max, precision, maximizar)
