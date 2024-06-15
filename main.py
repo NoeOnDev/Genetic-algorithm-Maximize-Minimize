@@ -143,16 +143,16 @@ def crear_video(carpeta, cantidad_generaciones):
 
 def validar_entradas():
     try:
-        valor_inicial = float(entry_valor_inicial.get())
-        valor_final = float(entry_valor_final.get())
-        precision = float(entry_precision.get())
+        limite_inferior = float(entry_limite_inferior.get())
+        limite_superior = float(entry_limite_superior.get())
+        precision = float(entry_resolucion.get())
         cantidad_generaciones = int(entry_cantidad_generaciones.get())
         prob_mutacion_gen = float(entry_prob_mutacion_gen.get())
         prob_mutacion_individuo = float(entry_prob_mutacion_individuo.get())
         cantidad_individuos = int(entry_cantidad_individuos.get())
         max_poblacion = int(entry_max_poblacion.get())
         
-        if valor_final < valor_inicial:
+        if limite_superior < limite_inferior:
             messagebox.showerror("Error de Validación", "El valor final no puede ser menor que el valor inicial.")
             return False
         if not (0 < precision <= 1):
@@ -177,9 +177,9 @@ def ejecutar_algoritmo_genetico():
     if not validar_entradas():
         return
 
-    valor_inicial = float(entry_valor_inicial.get())
-    valor_final = float(entry_valor_final.get())
-    precision = float(entry_precision.get())
+    limite_inferior = float(entry_limite_inferior.get())
+    limite_superior = float(entry_limite_superior.get())
+    resolucion = float(entry_resolucion.get())
     cantidad_generaciones = int(entry_cantidad_generaciones.get())
     maximizar = var_maximizar.get() == 1
     prob_mutacion_gen = float(entry_prob_mutacion_gen.get())
@@ -187,18 +187,18 @@ def ejecutar_algoritmo_genetico():
     cantidad_individuos = int(entry_cantidad_individuos.get())
     max_poblacion = int(entry_max_poblacion.get())
 
-    longitud_bits = calcular_longitud_bits(valor_inicial, valor_final, precision)
-    valor_min = valor_inicial
-    valor_max = valor_final
+    longitud_bits = calcular_longitud_bits(limite_inferior, limite_superior, resolucion)
+    limite_inferior_x = limite_inferior
+    limite_superior_x = limite_superior
 
-    carpeta_graficas = "graficas"
-    if not os.path.exists(carpeta_graficas):
-        os.makedirs(carpeta_graficas)
+    carpeta_graficas_generacion = "graficas_generacion"
+    if not os.path.exists(carpeta_graficas_generacion):
+        os.makedirs(carpeta_graficas_generacion)
 
-    x_valores = np.linspace(valor_min, valor_max, 400)
+    x_valores = np.linspace(limite_inferior_x, limite_superior_x, 400)
     y_valores = [funcion_aptitud(x) for x in x_valores]
 
-    poblacion = crear_poblacion_inicial(cantidad_individuos, valor_min, valor_max, longitud_bits)
+    poblacion = crear_poblacion_inicial(cantidad_individuos, limite_inferior_x, limite_superior_x, longitud_bits)
     mejores_aptitudes = []
     peores_aptitudes = []
     medias_aptitudes = []
@@ -206,7 +206,7 @@ def ejecutar_algoritmo_genetico():
     resultados_texto.delete('1.0', tk.END)
 
     for generacion in range(cantidad_generaciones + 1):
-        aptitudes = [evaluar_aptitud(ind, maximizar, valor_min, valor_max, longitud_bits) for ind in poblacion]
+        aptitudes = [evaluar_aptitud(ind, maximizar, limite_inferior_x, limite_superior_x, longitud_bits) for ind in poblacion]
         mejor_aptitud = max(aptitudes) if maximizar else min(aptitudes)
         peor_aptitud = min(aptitudes) if maximizar else max(aptitudes)
         media_aptitud = sum(aptitudes) / len(aptitudes)
@@ -216,7 +216,7 @@ def ejecutar_algoritmo_genetico():
         medias_aptitudes.append(media_aptitud)
 
         mejor_individuo = poblacion[aptitudes.index(mejor_aptitud)]
-        mejor_x_valor = binario_a_flotante(mejor_individuo, valor_min, valor_max, longitud_bits)
+        mejor_x_valor = binario_a_flotante(mejor_individuo, limite_inferior_x, limite_superior_x, longitud_bits)
         peor_individuo = poblacion[aptitudes.index(peor_aptitud)]
 
         tabla = PrettyTable()
@@ -224,7 +224,7 @@ def ejecutar_algoritmo_genetico():
         tabla.add_row([generacion, mejor_individuo, aptitudes.index(mejor_aptitud), round(mejor_x_valor, 3), round(mejor_aptitud, 3)])
         resultados_texto.insert(tk.END, tabla.get_string() + "\n")
 
-        graficar_funcion_con_individuos(x_valores, y_valores, poblacion, mejor_individuo, peor_individuo, generacion, carpeta_graficas, valor_min, valor_max, maximizar, longitud_bits)
+        graficar_funcion_con_individuos(x_valores, y_valores, poblacion, mejor_individuo, peor_individuo, generacion, carpeta_graficas_generacion, limite_inferior_x, limite_superior_x, maximizar, longitud_bits)
         
         if generacion < cantidad_generaciones:
             pares = seleccionar_pares(poblacion)
@@ -238,53 +238,53 @@ def ejecutar_algoritmo_genetico():
                     nueva_poblacion.extend(par)
 
             nueva_poblacion = [mutar(ind, prob_mutacion_gen, prob_mutacion_individuo, longitud_bits) for ind in nueva_poblacion]
-            poblacion = [ind for ind in nueva_poblacion if valor_min <= binario_a_flotante(ind, valor_min, valor_max, longitud_bits) <= valor_max]
-            poblacion, estadisticas = podar(poblacion, max_poblacion, valor_min, valor_max, maximizar, longitud_bits)
+            poblacion = [ind for ind in nueva_poblacion if limite_inferior_x <= binario_a_flotante(ind, limite_inferior_x, limite_superior_x, longitud_bits) <= limite_superior_x]
+            poblacion, estadisticas = podar(poblacion, max_poblacion, limite_inferior_x, limite_superior_x, maximizar, longitud_bits)
             poblacion.append(mejor_individuo)
 
-    poblacion, estadisticas = podar(poblacion, max_poblacion, valor_min, valor_max, maximizar, longitud_bits)
+    poblacion, estadisticas = podar(poblacion, max_poblacion, limite_inferior_x, limite_superior_x, maximizar, longitud_bits)
 
-    graficar_evolucion(mejores_aptitudes, peores_aptitudes, medias_aptitudes, carpeta_graficas, maximizar)
-    crear_video(carpeta_graficas, cantidad_generaciones)
+    graficar_evolucion(mejores_aptitudes, peores_aptitudes, medias_aptitudes, carpeta_graficas_generacion, maximizar)
+    crear_video(carpeta_graficas_generacion, cantidad_generaciones)
 
 root = tk.Tk()
 root.title("Algoritmo Genético")
 
-tk.Label(root, text="Valor Inicial:").grid(row=0, column=0, sticky=tk.W)
-entry_valor_inicial = tk.Entry(root)
-entry_valor_inicial.grid(row=0, column=1)
+tk.Label(root, text="Número de Individuos:").grid(row=0, column=0, sticky=tk.W)
+entry_cantidad_individuos = tk.Entry(root)
+entry_cantidad_individuos.grid(row=0, column=1)
 
-tk.Label(root, text="Valor Final:").grid(row=1, column=0, sticky=tk.W)
-entry_valor_final = tk.Entry(root)
-entry_valor_final.grid(row=1, column=1)
+tk.Label(root, text="Población Máxima:").grid(row=1, column=0, sticky=tk.W)
+entry_max_poblacion = tk.Entry(root)
+entry_max_poblacion.grid(row=1, column=1)
 
-tk.Label(root, text="Delta X:").grid(row=2, column=0, sticky=tk.W)
-entry_precision = tk.Entry(root)
-entry_precision.grid(row=2, column=1)
+tk.Label(root, text="Limite Inferior de X:").grid(row=2, column=0, sticky=tk.W)
+entry_limite_inferior = tk.Entry(root)
+entry_limite_inferior.grid(row=2, column=1)
 
-tk.Label(root, text="Número de Generaciones:").grid(row=3, column=0, sticky=tk.W)
-entry_cantidad_generaciones = tk.Entry(root)
-entry_cantidad_generaciones.grid(row=3, column=1)
+tk.Label(root, text="Limite Superior de X:").grid(row=3, column=0, sticky=tk.W)
+entry_limite_superior = tk.Entry(root)
+entry_limite_superior.grid(row=3, column=1)
 
-tk.Label(root, text="Probabilidad de Mutación del Gen:").grid(row=4, column=0, sticky=tk.W)
-entry_prob_mutacion_gen = tk.Entry(root)
-entry_prob_mutacion_gen.grid(row=4, column=1)
+tk.Label(root, text="Delta X:").grid(row=4, column=0, sticky=tk.W)
+entry_resolucion = tk.Entry(root)
+entry_resolucion.grid(row=4, column=1)
 
 tk.Label(root, text="Probabilidad de Mutación del Individuo:").grid(row=5, column=0, sticky=tk.W)
 entry_prob_mutacion_individuo = tk.Entry(root)
 entry_prob_mutacion_individuo.grid(row=5, column=1)
 
-tk.Label(root, text="Número de Individuos:").grid(row=6, column=0, sticky=tk.W)
-entry_cantidad_individuos = tk.Entry(root)
-entry_cantidad_individuos.grid(row=6, column=1)
+tk.Label(root, text="Probabilidad de Mutación del Gen:").grid(row=6, column=0, sticky=tk.W)
+entry_prob_mutacion_gen = tk.Entry(root)
+entry_prob_mutacion_gen.grid(row=6, column=1)
 
-tk.Label(root, text="Población Máxima:").grid(row=7, column=0, sticky=tk.W)
-entry_max_poblacion = tk.Entry(root)
-entry_max_poblacion.grid(row=7, column=1)
-
-tk.Label(root, text="Maximizar Función:").grid(row=8, column=0, sticky=tk.W)
+tk.Label(root, text="Maximizar Función:").grid(row=7, column=0, sticky=tk.W)
 var_maximizar = tk.IntVar()
-tk.Checkbutton(root, variable=var_maximizar).grid(row=8, column=1, sticky=tk.W)
+tk.Checkbutton(root, variable=var_maximizar).grid(row=7, column=1, sticky=tk.W)
+
+tk.Label(root, text="Número de Generaciones:").grid(row=8, column=0, sticky=tk.W)
+entry_cantidad_generaciones = tk.Entry(root)
+entry_cantidad_generaciones.grid(row=8, column=1)
 
 tk.Button(root, text="Ejecutar", command=ejecutar_algoritmo_genetico).grid(row=9, column=0, columnspan=2)
 
