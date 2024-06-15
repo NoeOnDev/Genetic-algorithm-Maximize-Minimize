@@ -67,7 +67,9 @@ def mutar(individuo, prob_mutacion_gen, prob_mutacion_individuo, longitud_bits):
         individuo = list(individuo)
         for i in range(longitud_bits):
             if random.random() < prob_mutacion_gen:
-                individuo[i] = '1' if individuo[i] == '0' else '0'
+                pos1 = random.randint(0, longitud_bits - 1)
+                pos2 = random.randint(0, longitud_bits - 1)
+                individuo[pos1], individuo[pos2] = individuo[pos2], individuo[pos1]
         return ''.join(individuo)
     return individuo
 
