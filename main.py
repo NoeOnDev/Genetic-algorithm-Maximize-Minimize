@@ -6,15 +6,15 @@ import numpy as np
 import cv2
 from prettytable import PrettyTable
 import tkinter as tk
-from tkinter import messagebox, simpledialog, scrolledtext
+from tkinter import messagebox, scrolledtext
 
 def funcion_aptitud_log_cos_x(x):
     return x * np.cos(x)
 
 funcion_aptitud = funcion_aptitud_log_cos_x
 
-def calcular_longitud_bits(valor_inicial, valor_final, precision):
-    return math.ceil(math.log2((valor_final - valor_inicial) / precision + 1))
+def calcular_longitud_bits(valor_inicial, valor_final, resolucion):
+    return math.ceil(math.log2((valor_final - valor_inicial) / resolucion + 1))
 
 def flotante_a_binario(valor, valor_min, valor_max, longitud_bits):
     valor_escalado = (valor - valor_min) / (valor_max - valor_min) * (2**longitud_bits - 1)
@@ -145,7 +145,7 @@ def validar_entradas():
     try:
         limite_inferior = float(entry_limite_inferior.get())
         limite_superior = float(entry_limite_superior.get())
-        precision = float(entry_resolucion.get())
+        resolucion = float(entry_resolucion.get())
         cantidad_generaciones = int(entry_cantidad_generaciones.get())
         prob_mutacion_gen = float(entry_prob_mutacion_gen.get())
         prob_mutacion_individuo = float(entry_prob_mutacion_individuo.get())
@@ -153,9 +153,9 @@ def validar_entradas():
         max_poblacion = int(entry_max_poblacion.get())
         
         if limite_superior < limite_inferior:
-            messagebox.showerror("Error de Validación", "El valor final no puede ser menor que el valor inicial.")
+            messagebox.showerror("Error de Validación", "El limite superior no puede ser menor que el valor inicial.")
             return False
-        if not (0 < precision <= 1):
+        if not (0 < resolucion <= 1):
             messagebox.showerror("Error de Validación", "Delta X debe estar entre 0 y 1.")
             return False
         if not (0 <= prob_mutacion_gen <= 1):
