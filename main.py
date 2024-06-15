@@ -47,12 +47,20 @@ def seleccionar_pares(poblacion, n):
             pares.append((poblacion[i], poblacion[j]))
     return pares
 
-
 def cruzar(par, longitud_bits):
-    punto_cruce = random.randint(1, longitud_bits - 1)
-    hijo1 = par[0][:punto_cruce] + par[1][punto_cruce:]
-    hijo2 = par[1][:punto_cruce] + par[0][punto_cruce:]
-    return hijo1, hijo2
+    n_puntos = random.randint(1, longitud_bits - 1)
+    puntos_cruce = sorted(random.sample(range(1, longitud_bits), n_puntos))
+    
+    hijo1, hijo2 = list(par[0]), list(par[1])
+    
+    for i in range(len(puntos_cruce)):
+        if i % 2 == 0:
+            if i == len(puntos_cruce) - 1:
+                hijo1[puntos_cruce[i]:], hijo2[puntos_cruce[i]:] = par[1][puntos_cruce[i]:], par[0][puntos_cruce[i]:]
+            else:
+                hijo1[puntos_cruce[i]:puntos_cruce[i + 1]], hijo2[puntos_cruce[i]:puntos_cruce[i + 1]] = par[1][puntos_cruce[i]:puntos_cruce[i + 1]], par[0][puntos_cruce[i]:puntos_cruce[i + 1]]
+    
+    return ''.join(hijo1), ''.join(hijo2)
 
 def mutar(individuo, prob_mutacion_gen, prob_mutacion_individuo, longitud_bits):
     if random.random() < prob_mutacion_individuo:
