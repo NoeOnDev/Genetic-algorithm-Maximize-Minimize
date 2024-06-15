@@ -2,10 +2,5 @@ __pycache__/
 build/
 dist/
 
-graficas_estadisticas/
-graficas_generacion/
-
-mejores_individuos.csv
-
 Estrategias.pdf
 Estrategias.txt
