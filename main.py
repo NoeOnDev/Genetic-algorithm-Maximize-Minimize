@@ -32,13 +32,21 @@ def evaluar_aptitud(individuo, maximizar, valor_minimo, valor_maximo, longitud_b
 def crear_poblacion_inicial(cantidad, valor_minimo, valor_maximo, longitud_bits):
     return [flotante_a_binario(random.uniform(valor_minimo, valor_maximo), valor_minimo, valor_maximo, longitud_bits) for _ in range(cantidad)]
 
-def seleccionar_pares(poblacion):
+def seleccionar_pares(poblacion, n):
     pares = []
-    n = len(poblacion)
-    for i in range(n):
-        for j in range(i + 1, n):
+    for i in range(len(poblacion)):
+        m = random.randint(0, len(poblacion) - 1)
+        indices_cruce = set()
+        intentos = 0
+        while len(indices_cruce) < m and intentos < 10 * len(poblacion):
+            j = random.randint(0, len(poblacion) - 1)
+            if j != i:
+                indices_cruce.add(j)
+            intentos += 1
+        for j in indices_cruce:
             pares.append((poblacion[i], poblacion[j]))
     return pares
+
 
 def cruzar(par, longitud_bits):
     punto_cruce = random.randint(1, longitud_bits - 1)
@@ -219,7 +227,6 @@ def ejecutar_algoritmo_genetico():
         mejor_valor_x = binario_a_flotante(mejor_individuo, valor_minimo, valor_maximo, longitud_bits)
         peor_individuo = poblacion[aptitudes.index(peor_aptitud)]
 
-        # Crear una tabla con los resultados de la generación actual
         tabla = PrettyTable()
         tabla.field_names = ["Generación", "Cadena de Bits", "Índice", "Valor de x", "Valor de Aptitud"]
         tabla.add_row([generacion, mejor_individuo, aptitudes.index(mejor_aptitud), round(mejor_valor_x, 3), round(mejor_aptitud, 3)])
@@ -228,7 +235,7 @@ def ejecutar_algoritmo_genetico():
         graficar_funcion_con_individuos(valores_x, valores_y, poblacion, mejor_individuo, peor_individuo, generacion, carpeta_graficas, valor_minimo, valor_maximo, maximizar, longitud_bits)
         
         if generacion < numero_generaciones:
-            pares = seleccionar_pares(poblacion)
+            pares = seleccionar_pares(poblacion, len(poblacion))
             nueva_poblacion = []
 
             for par in pares:
@@ -248,7 +255,6 @@ def ejecutar_algoritmo_genetico():
     graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta_graficas, maximizar)
     crear_video(carpeta_graficas, numero_generaciones)
 
-# Configuración de la interfaz gráfica
 root = tk.Tk()
 root.title("Algoritmo Genético")
 
