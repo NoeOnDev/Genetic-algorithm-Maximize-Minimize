@@ -35,7 +35,7 @@ def crear_poblacion_inicial(cantidad, valor_minimo, valor_maximo, longitud_bits)
 def seleccionar_pares(poblacion, n):
     pares = []
     for i in range(len(poblacion)):
-        m = random.randint(0, len(poblacion) - 1)
+        m = random.randint(1, len(poblacion) - 1)
         indices_cruce = set()
         intentos = 0
         while len(indices_cruce) < m and intentos < 10 * len(poblacion):
@@ -51,26 +51,29 @@ def cruzar(par, longitud_bits):
     n_puntos = random.randint(1, longitud_bits - 1)
     puntos_cruce = sorted(random.sample(range(1, longitud_bits), n_puntos))
     
+    if len(puntos_cruce) % 2 != 0:
+        puntos_cruce.append(longitud_bits)
+    
     hijo1, hijo2 = list(par[0]), list(par[1])
     
-    for i in range(len(puntos_cruce)):
-        if i % 2 == 0:
-            if i == len(puntos_cruce) - 1:
-                hijo1[puntos_cruce[i]:], hijo2[puntos_cruce[i]:] = par[1][puntos_cruce[i]:], par[0][puntos_cruce[i]:]
-            else:
-                hijo1[puntos_cruce[i]:puntos_cruce[i + 1]], hijo2[puntos_cruce[i]:puntos_cruce[i + 1]] = par[1][puntos_cruce[i]:puntos_cruce[i + 1]], par[0][puntos_cruce[i]:puntos_cruce[i + 1]]
+    for i in range(0, len(puntos_cruce), 2):
+        start, end = puntos_cruce[i], puntos_cruce[i+1]
+        hijo1[start:end], hijo2[start:end] = hijo2[start:end], hijo1[start:end]
     
     return ''.join(hijo1), ''.join(hijo2)
 
+def mutar_gen(individuo, prob_mutacion_gen, longitud_bits):
+    individuo = list(individuo)
+    for i in range(longitud_bits):
+        if random.random() < prob_mutacion_gen:
+            pos1 = random.randint(0, longitud_bits - 1)
+            pos2 = random.randint(0, longitud_bits - 1)
+            individuo[pos1], individuo[pos2] = individuo[pos2], individuo[pos1]
+    return ''.join(individuo)
+
 def mutar(individuo, prob_mutacion_gen, prob_mutacion_individuo, longitud_bits):
     if random.random() < prob_mutacion_individuo:
-        individuo = list(individuo)
-        for i in range(longitud_bits):
-            if random.random() < prob_mutacion_gen:
-                pos1 = random.randint(0, longitud_bits - 1)
-                pos2 = random.randint(0, longitud_bits - 1)
-                individuo[pos1], individuo[pos2] = individuo[pos2], individuo[pos1]
-        return ''.join(individuo)
+        return mutar_gen(individuo, prob_mutacion_gen, longitud_bits)
     return individuo
 
 def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longitud_bits):
@@ -79,11 +82,14 @@ def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longi
     mejor_individuo = poblacion_unica[0]
     
     if len(poblacion_unica) > max_poblacion:
-        num_a_mantener = int(max_poblacion * 0.1)  # Mantener el 10%
+        num_a_mantener = int(max_poblacion * 0.1)
         a_mantener = random.sample(poblacion_unica[1:], num_a_mantener - 1)
         a_mantener.append(mejor_individuo)
         poblacion_unica = a_mantener
-        
+    
+    if mejor_individuo not in poblacion_unica:
+        poblacion_unica.append(mejor_individuo)
+    
     estadisticas = {
         "max": evaluar_aptitud(mejor_individuo, maximizar, valor_minimo, valor_maximo, longitud_bits),
         "min": evaluar_aptitud(poblacion_unica[-1], maximizar, valor_minimo, valor_maximo, longitud_bits),
