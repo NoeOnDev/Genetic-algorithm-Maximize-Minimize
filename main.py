@@ -284,15 +284,15 @@ def ejecutar_algoritmo_genetico():
 root = tk.Tk()
 root.title("Algoritmo Genético")
 
-tk.Label(root, text="Valor Inicial:").grid(row=0, column=0, sticky=tk.W)
+tk.Label(root, text="Límite Inferior:").grid(row=0, column=0, sticky=tk.W)
 entrada_valor_inicio = tk.Entry(root)
 entrada_valor_inicio.grid(row=0, column=1)
 
-tk.Label(root, text="Valor Final:").grid(row=1, column=0, sticky=tk.W)
+tk.Label(root, text="Límite Superior:").grid(row=1, column=0, sticky=tk.W)
 entrada_valor_fin = tk.Entry(root)
 entrada_valor_fin.grid(row=1, column=1)
 
-tk.Label(root, text="Delta X:").grid(row=2, column=0, sticky=tk.W)
+tk.Label(root, text="Resolución:").grid(row=2, column=0, sticky=tk.W)
 entrada_precision = tk.Entry(root)
 entrada_precision.grid(row=2, column=1)
 
@@ -308,7 +308,7 @@ tk.Label(root, text="Probabilidad de Mutación del Individuo:").grid(row=5, colu
 entrada_prob_mutacion_individuo = tk.Entry(root)
 entrada_prob_mutacion_individuo.grid(row=5, column=1)
 
-tk.Label(root, text="Número de Individuos:").grid(row=6, column=0, sticky=tk.W)
+tk.Label(root, text="Población Inicial:").grid(row=6, column=0, sticky=tk.W)
 entrada_cantidad_individuos = tk.Entry(root)
 entrada_cantidad_individuos.grid(row=6, column=1)
 
