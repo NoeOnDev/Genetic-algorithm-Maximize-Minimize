@@ -155,7 +155,7 @@ def crear_video(carpeta, numero_generaciones):
     carpeta_imagenes = carpeta
     nombre_video = 'video_de_evolucion/VideoAlgoritmoGenetico.avi'
 
-    imagenes = [f"Generacion_{i}.png" for i in range(0, numero_generaciones + 1)]
+    imagenes = [f"Generacion_{i}.png" for i in range(1, numero_generaciones + 1)]
     frame = cv2.imread(os.path.join(carpeta_imagenes, imagenes[0]))
     height, width, layers = frame.shape
 
@@ -218,7 +218,6 @@ def ejecutar_algoritmo_genetico():
     valor_minimo = valor_inicio
     valor_maximo = valor_fin
 
-    # Crear directorios
     carpeta_graficas_generacion = "mejores_y_peores_por_generacion"
     carpeta_grafica_evolucion = "grafica_de_evolucion"
     carpeta_video = "video_de_evolucion"
@@ -240,7 +239,7 @@ def ejecutar_algoritmo_genetico():
 
     texto_resultados.delete('1.0', tk.END)
 
-    for generacion in range(numero_generaciones + 1):
+    for generacion in range(1, numero_generaciones + 1):
         aptitudes = [evaluar_aptitud(ind, maximizar, valor_minimo, valor_maximo, longitud_bits) for ind in poblacion]
         mejor_aptitud = max(aptitudes) if maximizar else min(aptitudes)
         peor_aptitud = min(aptitudes) if maximizar else max(aptitudes)
