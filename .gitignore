@@ -2,5 +2,9 @@ __pycache__/
 build/
 dist/
 
+grafica_de_evolucion/
+mejores_y_peores_por_generacion/
+video_de_evolucion/
+
 Estrategias.pdf
 Estrategias.txt

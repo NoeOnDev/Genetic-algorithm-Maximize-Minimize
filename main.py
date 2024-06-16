@@ -153,7 +153,7 @@ def graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, 
 
 def crear_video(carpeta, numero_generaciones):
     carpeta_imagenes = carpeta
-    nombre_video = 'VideoAlgoritmoGenetico.avi'
+    nombre_video = 'video_de_evolucion/VideoAlgoritmoGenetico.avi'
 
     imagenes = [f"Generacion_{i}.png" for i in range(0, numero_generaciones + 1)]
     frame = cv2.imread(os.path.join(carpeta_imagenes, imagenes[0]))
@@ -218,9 +218,17 @@ def ejecutar_algoritmo_genetico():
     valor_minimo = valor_inicio
     valor_maximo = valor_fin
 
-    carpeta_graficas = "graficas"
-    if not os.path.exists(carpeta_graficas):
-        os.makedirs(carpeta_graficas)
+    # Crear directorios
+    carpeta_graficas_generacion = "mejores_y_peores_por_generacion"
+    carpeta_grafica_evolucion = "grafica_de_evolucion"
+    carpeta_video = "video_de_evolucion"
+
+    if not os.path.exists(carpeta_graficas_generacion):
+        os.makedirs(carpeta_graficas_generacion)
+    if not os.path.exists(carpeta_grafica_evolucion):
+        os.makedirs(carpeta_grafica_evolucion)
+    if not os.path.exists(carpeta_video):
+        os.makedirs(carpeta_video)
 
     valores_x = np.linspace(valor_minimo, valor_maximo, 400)
     valores_y = [funcion_aptitud(x) for x in valores_x]
@@ -251,7 +259,7 @@ def ejecutar_algoritmo_genetico():
         tabla.add_row([generacion, mejor_individuo, aptitudes.index(mejor_aptitud), round(mejor_valor_x, 3), round(mejor_aptitud, 3)])
         texto_resultados.insert(tk.END, tabla.get_string() + "\n")
 
-        graficar_funcion_con_individuos(valores_x, valores_y, poblacion, mejor_individuo, peor_individuo, generacion, carpeta_graficas, valor_minimo, valor_maximo, maximizar, longitud_bits)
+        graficar_funcion_con_individuos(valores_x, valores_y, poblacion, mejor_individuo, peor_individuo, generacion, carpeta_graficas_generacion, valor_minimo, valor_maximo, maximizar, longitud_bits)
         
         if generacion < numero_generaciones:
             pares = seleccionar_pares(poblacion, len(poblacion))
@@ -271,8 +279,8 @@ def ejecutar_algoritmo_genetico():
 
     poblacion, estadisticas = podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longitud_bits)
 
-    graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta_graficas, maximizar)
-    crear_video(carpeta_graficas, numero_generaciones)
+    graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta_grafica_evolucion, maximizar)
+    crear_video(carpeta_graficas_generacion, numero_generaciones)
 
 root = tk.Tk()
 root.title("Algoritmo Genético")
