@@ -76,13 +76,16 @@ def mutar(individuo, prob_mutacion_gen, prob_mutacion_individuo, longitud_bits):
 def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longitud_bits):
     poblacion_unica = list(set(poblacion))
     poblacion_unica.sort(key=lambda ind: evaluar_aptitud(ind, maximizar, valor_minimo, valor_maximo, longitud_bits), reverse=maximizar)
+    mejor_individuo = poblacion_unica[0]
+    
     if len(poblacion_unica) > max_poblacion:
-        mejor_individuo = poblacion_unica[0]
-        a_mantener = random.sample(poblacion_unica[1:], max_poblacion - 1)
+        num_a_mantener = int(max_poblacion * 0.1)  # Mantener el 10%
+        a_mantener = random.sample(poblacion_unica[1:], num_a_mantener - 1)
         a_mantener.append(mejor_individuo)
         poblacion_unica = a_mantener
+        
     estadisticas = {
-        "max": evaluar_aptitud(poblacion_unica[0], maximizar, valor_minimo, valor_maximo, longitud_bits),
+        "max": evaluar_aptitud(mejor_individuo, maximizar, valor_minimo, valor_maximo, longitud_bits),
         "min": evaluar_aptitud(poblacion_unica[-1], maximizar, valor_minimo, valor_maximo, longitud_bits),
         "promedio": sum(evaluar_aptitud(ind, maximizar, valor_minimo, valor_maximo, longitud_bits) for ind in poblacion_unica) / len(poblacion_unica)
     }
