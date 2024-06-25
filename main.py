@@ -97,77 +97,6 @@ def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longi
     }
     return poblacion_unica, estadisticas
 
-def graficar_funcion_con_individuos(valores_x, valores_y, individuos, mejor, peor, generacion, carpeta, valor_minimo, valor_maximo, maximizar, longitud_bits):
-    plt.figure(figsize=(10, 5))
-    plt.plot(valores_x, valores_y, label=f'f(x) = {funcion_aptitud.__name__}')
-
-    x_individuos = [binario_a_flotante(ind, valor_minimo, valor_maximo, longitud_bits) for ind in individuos]
-    y_individuos = [funcion_aptitud(x) for x in x_individuos]
-
-    plt.scatter(x_individuos, y_individuos, color='blue', label='Individuos', alpha=0.6)
-
-    mejor_x = binario_a_flotante(mejor, valor_minimo, valor_maximo, longitud_bits)
-    mejor_y = funcion_aptitud(mejor_x)
-    peor_x = binario_a_flotante(peor, valor_minimo, valor_maximo, longitud_bits)
-    peor_y = funcion_aptitud(peor_x)
-
-    if maximizar:
-        plt.scatter([mejor_x], [mejor_y], color='green', label='Mejor Individuo', s=100, edgecolor='black')
-        plt.scatter([peor_x], [peor_y], color='red', label='Peor Individuo', s=100, edgecolor='black')
-    else:
-        plt.scatter([mejor_x], [mejor_y], color='red', label='Peor Individuo', s=100, edgecolor='black')
-        plt.scatter([peor_x], [peor_y], color='green', label='Mejor Individuo', s=100, edgecolor='black')
-
-    plt.xlabel('x')
-    plt.ylabel('f(x)')
-    plt.title(f'Función y Individuos - Generación {generacion}')
-    plt.legend()
-    plt.grid(True)
-
-    plt.xlim(valor_minimo, valor_maximo)
-    plt.ylim(min(valores_y), max(valores_y))
-
-    nombre_grafica = f"Generacion_{generacion}.png"
-    plt.savefig(os.path.join(carpeta, nombre_grafica))
-    plt.close()
-
-def graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta, maximizar):
-    plt.figure(figsize=(10, 5))
-    
-    plt.plot(mejores_aptitudes, label='Mejor Aptitud', color='green')
-    plt.plot(peores_aptitudes, label='Peor Aptitud', color='red')
-    plt.plot(aptitudes_promedio, label='Aptitud Promedio', color='blue')
-
-    plt.xlabel('Generación')
-    plt.ylabel('Aptitud')
-    if maximizar:
-        plt.title('Evolución de la Maximización de Aptitudes')
-    else:
-        plt.title('Evolución de la Minimización de Aptitudes')
-
-    plt.legend()
-    plt.grid(True)
-
-    plt.savefig(os.path.join(carpeta, 'Evolucion_Aptitud.png'))
-    plt.close()
-
-def crear_video(carpeta, numero_generaciones):
-    carpeta_imagenes = carpeta
-    nombre_video = 'video_de_evolucion/VideoAlgoritmoGenetico.avi'
-
-    imagenes = [f"Generacion_{i}.png" for i in range(1, numero_generaciones + 1)]
-    frame = cv2.imread(os.path.join(carpeta_imagenes, imagenes[0]))
-    height, width, layers = frame.shape
-
-    video = cv2.VideoWriter(
-        nombre_video, cv2.VideoWriter_fourcc(*'DIVX'), 1, (width, height))
-
-    for imagen in imagenes:
-        video.write(cv2.imread(os.path.join(carpeta_imagenes, imagen)))
-
-    cv2.destroyAllWindows()
-    video.release()
-
 def validar_entradas():
     try:
         valor_inicio = float(entrada_valor_inicio.get())
@@ -280,6 +209,77 @@ def ejecutar_algoritmo_genetico():
 
     graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta_grafica_evolucion, maximizar)
     crear_video(carpeta_graficas_generacion, numero_generaciones)
+    
+def graficar_funcion_con_individuos(valores_x, valores_y, individuos, mejor, peor, generacion, carpeta, valor_minimo, valor_maximo, maximizar, longitud_bits):
+    plt.figure(figsize=(10, 5))
+    plt.plot(valores_x, valores_y, label=f'f(x) = {funcion_aptitud.__name__}')
+
+    x_individuos = [binario_a_flotante(ind, valor_minimo, valor_maximo, longitud_bits) for ind in individuos]
+    y_individuos = [funcion_aptitud(x) for x in x_individuos]
+
+    plt.scatter(x_individuos, y_individuos, color='blue', label='Individuos', alpha=0.6)
+
+    mejor_x = binario_a_flotante(mejor, valor_minimo, valor_maximo, longitud_bits)
+    mejor_y = funcion_aptitud(mejor_x)
+    peor_x = binario_a_flotante(peor, valor_minimo, valor_maximo, longitud_bits)
+    peor_y = funcion_aptitud(peor_x)
+
+    if maximizar:
+        plt.scatter([mejor_x], [mejor_y], color='green', label='Mejor Individuo', s=100, edgecolor='black')
+        plt.scatter([peor_x], [peor_y], color='red', label='Peor Individuo', s=100, edgecolor='black')
+    else:
+        plt.scatter([mejor_x], [mejor_y], color='red', label='Peor Individuo', s=100, edgecolor='black')
+        plt.scatter([peor_x], [peor_y], color='green', label='Mejor Individuo', s=100, edgecolor='black')
+
+    plt.xlabel('x')
+    plt.ylabel('f(x)')
+    plt.title(f'Función y Individuos - Generación {generacion}')
+    plt.legend()
+    plt.grid(True)
+
+    plt.xlim(valor_minimo, valor_maximo)
+    plt.ylim(min(valores_y), max(valores_y))
+
+    nombre_grafica = f"Generacion_{generacion}.png"
+    plt.savefig(os.path.join(carpeta, nombre_grafica))
+    plt.close()
+
+def graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta, maximizar):
+    plt.figure(figsize=(10, 5))
+    
+    plt.plot(mejores_aptitudes, label='Mejor Aptitud', color='green')
+    plt.plot(peores_aptitudes, label='Peor Aptitud', color='red')
+    plt.plot(aptitudes_promedio, label='Aptitud Promedio', color='blue')
+
+    plt.xlabel('Generación')
+    plt.ylabel('Aptitud')
+    if maximizar:
+        plt.title('Evolución de la Maximización de Aptitudes')
+    else:
+        plt.title('Evolución de la Minimización de Aptitudes')
+
+    plt.legend()
+    plt.grid(True)
+
+    plt.savefig(os.path.join(carpeta, 'Evolucion_Aptitud.png'))
+    plt.close()
+
+def crear_video(carpeta, numero_generaciones):
+    carpeta_imagenes = carpeta
+    nombre_video = 'video_de_evolucion/VideoAlgoritmoGenetico.avi'
+
+    imagenes = [f"Generacion_{i}.png" for i in range(1, numero_generaciones + 1)]
+    frame = cv2.imread(os.path.join(carpeta_imagenes, imagenes[0]))
+    height, width, layers = frame.shape
+
+    video = cv2.VideoWriter(
+        nombre_video, cv2.VideoWriter_fourcc(*'DIVX'), 1, (width, height))
+
+    for imagen in imagenes:
+        video.write(cv2.imread(os.path.join(carpeta_imagenes, imagen)))
+
+    cv2.destroyAllWindows()
+    video.release()
 
 root = tk.Tk()
 root.title("Algoritmo Genético")
