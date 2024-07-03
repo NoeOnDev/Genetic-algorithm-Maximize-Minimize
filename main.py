@@ -1,4 +1,3 @@
-# Algoritmo Genético para la Optimización de Funciones
 import os
 import random
 import math
@@ -9,6 +8,7 @@ from prettytable import PrettyTable
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
 
+# Definir la función de aptitud
 def funcion_aptitud_log_cos_x(x):
     return x * np.cos(x)
 
@@ -33,6 +33,7 @@ def evaluar_aptitud(individuo, maximizar, valor_minimo, valor_maximo, longitud_b
 def crear_poblacion_inicial(cantidad, valor_minimo, valor_maximo, longitud_bits):
     return [flotante_a_binario(random.uniform(valor_minimo, valor_maximo), valor_minimo, valor_maximo, longitud_bits) for _ in range(cantidad)]
 
+# Estrategia A1: Formación de parejas
 def seleccionar_pares(poblacion, n):
     pares = []
     for i in range(len(poblacion)):
@@ -48,6 +49,7 @@ def seleccionar_pares(poblacion, n):
             pares.append((poblacion[i], poblacion[j]))
     return pares
 
+# Estrategia C2: Múltiples puntos de cruza
 def cruzar(par, longitud_bits):
     n_puntos = random.randint(1, longitud_bits - 1)
     puntos_cruce = sorted(random.sample(range(1, longitud_bits), n_puntos))
@@ -63,6 +65,7 @@ def cruzar(par, longitud_bits):
     
     return ''.join(hijo1), ''.join(hijo2)
 
+# Estrategia M2: Intercambio de posición de bits
 def mutar_gen(individuo, prob_mutacion_gen, longitud_bits):
     individuo = list(individuo)
     for i in range(longitud_bits):
@@ -77,14 +80,15 @@ def mutar(individuo, prob_mutacion_gen, prob_mutacion_individuo, longitud_bits):
         return mutar_gen(individuo, prob_mutacion_gen, longitud_bits)
     return individuo
 
+# Estrategia P2: Eliminación aleatoria asegurando mantener al mejor individuo
 def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longitud_bits):
     poblacion_unica = list(set(poblacion))
     poblacion_unica.sort(key=lambda ind: evaluar_aptitud(ind, maximizar, valor_minimo, valor_maximo, longitud_bits), reverse=maximizar)
     mejor_individuo = poblacion_unica[0]
     
     if len(poblacion_unica) > max_poblacion:
-        num_a_mantener = int(max_poblacion * 0.1)
-        a_mantener = random.sample(poblacion_unica[1:], num_a_mantener - 1)
+        num_a_mantener = max_poblacion - 1
+        a_mantener = random.sample(poblacion_unica[1:], num_a_mantener)
         a_mantener.append(mejor_individuo)
         poblacion_unica = a_mantener
     
