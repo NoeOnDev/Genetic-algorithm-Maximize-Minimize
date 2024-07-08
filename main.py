@@ -102,38 +102,6 @@ def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longi
     }
     return poblacion_unica, estadisticas
 
-def validar_entradas():
-    try:
-        valor_inicio = float(entrada_valor_inicio.get())
-        valor_fin = float(entrada_valor_fin.get())
-        precision = float(entrada_precision.get())
-        numero_generaciones = int(entrada_numero_generaciones.get())
-        prob_mutacion_gen = float(entrada_prob_mutacion_gen.get())
-        prob_mutacion_individuo = float(entrada_prob_mutacion_individuo.get())
-        cantidad_individuos = int(entrada_cantidad_individuos.get())
-        max_poblacion = int(entrada_max_poblacion.get())
-        
-        if valor_fin < valor_inicio:
-            messagebox.showerror("Error de Validación", "El valor final no puede ser menor que el valor inicial.")
-            return False
-        if not (0 < precision <= 1):
-            messagebox.showerror("Error de Validación", "Delta X debe estar entre 0 y 1.")
-            return False
-        if not (0 <= prob_mutacion_gen <= 1):
-            messagebox.showerror("Error de Validación", "La probabilidad de mutación del gen debe estar entre 0 y 1.")
-            return False
-        if not (0 <= prob_mutacion_individuo <= 1):
-            messagebox.showerror("Error de Validación", "La probabilidad de mutación del individuo debe estar entre 0 y 1.")
-            return False
-        if numero_generaciones <= 0 or cantidad_individuos <= 0 or max_poblacion <= 0:
-            messagebox.showerror("Error de Validación", "El número de generaciones, individuos y población máxima deben ser números enteros positivos.")
-            return False
-
-        return True
-    except ValueError:
-        messagebox.showerror("Error de Validación", "Por favor, ingrese valores válidos en todos los campos.")
-        return False
-
 def ejecutar_algoritmo_genetico():
     if not validar_entradas():
         return
@@ -168,6 +136,7 @@ def ejecutar_algoritmo_genetico():
     # Creo los valores de "x" y "y" para la función de aptitud
     valores_x = np.linspace(valor_minimo, valor_maximo, 400)
     valores_y = [funcion_aptitud(x) for x in valores_x]
+    
     # Creo la población inicial
     poblacion = crear_poblacion_inicial(cantidad_individuos, valor_minimo, valor_maximo, longitud_bits)
     mejores_aptitudes = []
@@ -178,18 +147,23 @@ def ejecutar_algoritmo_genetico():
 
     for generacion in range(1, numero_generaciones + 1):
         aptitudes = [evaluar_aptitud(ind, maximizar, valor_minimo, valor_maximo, longitud_bits) for ind in poblacion]
+        
         mejor_aptitud = max(aptitudes) if maximizar else min(aptitudes)
         peor_aptitud = min(aptitudes) if maximizar else max(aptitudes)
         aptitud_promedio = sum(aptitudes) / len(aptitudes)
-
+        
+        # Guardo las mejores, peores y promedio de aptitudes por generación
         mejores_aptitudes.append(mejor_aptitud)
         peores_aptitudes.append(peor_aptitud)
         aptitudes_promedio.append(aptitud_promedio)
 
+        # Encuentro al mejor y peor individuo de la generación
         mejor_individuo = poblacion[aptitudes.index(mejor_aptitud)]
-        mejor_valor_x = binario_a_flotante(mejor_individuo, valor_minimo, valor_maximo, longitud_bits)
         peor_individuo = poblacion[aptitudes.index(peor_aptitud)]
-
+        
+        # Convierto al mejor individuo de su valor binario a flotante para mostrarlo en la tabla
+        mejor_valor_x = binario_a_flotante(mejor_individuo, valor_minimo, valor_maximo, longitud_bits)
+        
         tabla = PrettyTable()
         tabla.field_names = ["Generación", "Cadena de Bits", "Índice", "Valor de x", "Valor de Aptitud"]
         tabla.add_row([generacion, mejor_individuo, aptitudes.index(mejor_aptitud), round(mejor_valor_x, 3), round(mejor_aptitud, 3)])
@@ -223,7 +197,7 @@ def ejecutar_algoritmo_genetico():
 
 def graficar_funcion_con_individuos(valores_x, valores_y, individuos, mejor, peor, generacion, carpeta, valor_minimo, valor_maximo, maximizar, longitud_bits):
     plt.figure(figsize=(10, 5))
-    plt.plot(valores_x, valores_y, label=f'f(x) = {funcion_aptitud.__name__}')
+    plt.plot(valores_x, valores_y, color='blue', linewidth=2)
 
     x_individuos = [binario_a_flotante(ind, valor_minimo, valor_maximo, longitud_bits) for ind in individuos]
     y_individuos = [funcion_aptitud(x) for x in x_individuos]
@@ -277,6 +251,37 @@ def graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, 
     
 
 # Interfaz Gráfica
+def validar_entradas():
+    try:
+        valor_inicio = float(entrada_valor_inicio.get())
+        valor_fin = float(entrada_valor_fin.get())
+        precision = float(entrada_precision.get())
+        numero_generaciones = int(entrada_numero_generaciones.get())
+        prob_mutacion_gen = float(entrada_prob_mutacion_gen.get())
+        prob_mutacion_individuo = float(entrada_prob_mutacion_individuo.get())
+        cantidad_individuos = int(entrada_cantidad_individuos.get())
+        max_poblacion = int(entrada_max_poblacion.get())
+        
+        if valor_fin < valor_inicio:
+            messagebox.showerror("Error de Validación", "El valor final no puede ser menor que el valor inicial.")
+            return False
+        if not (0 < precision <= 1):
+            messagebox.showerror("Error de Validación", "Delta X debe estar entre 0 y 1.")
+            return False
+        if not (0 <= prob_mutacion_gen <= 1):
+            messagebox.showerror("Error de Validación", "La probabilidad de mutación del gen debe estar entre 0 y 1.")
+            return False
+        if not (0 <= prob_mutacion_individuo <= 1):
+            messagebox.showerror("Error de Validación", "La probabilidad de mutación del individuo debe estar entre 0 y 1.")
+            return False
+        if numero_generaciones <= 0 or cantidad_individuos <= 0 or max_poblacion <= 0:
+            messagebox.showerror("Error de Validación", "El número de generaciones, individuos y población máxima deben ser números enteros positivos.")
+            return False
+
+        return True
+    except ValueError:
+        messagebox.showerror("Error de Validación", "Por favor, ingrese valores válidos en todos los campos.")
+        return False
 
 root = tk.Tk()
 root.title("Algoritmo Genético")
