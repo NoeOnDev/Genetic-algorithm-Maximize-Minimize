@@ -38,6 +38,7 @@ def seleccionar_pares(poblacion, n):
     pares = []
     for i in range(len(poblacion)):
         m = random.randint(0, n)
+        # Selecciono m individuos aleatorios para formar parejas
         indices_cruce = set()
         intentos = 0
         while len(indices_cruce) < m and intentos < 10 * len(poblacion):
@@ -45,12 +46,14 @@ def seleccionar_pares(poblacion, n):
             if j != i:
                 indices_cruce.add(j)
             intentos += 1
+
         for j in indices_cruce:
             pares.append((poblacion[i], poblacion[j]))
     return pares
 
 # Estrategia C2: Múltiples puntos de cruza
 def cruzar(par, longitud_bits):
+    # Elijo aleatoriamente la cantidad de puntos de cruza
     n_puntos = random.randint(1, longitud_bits - 1)
     puntos_cruce = sorted(random.sample(range(1, longitud_bits), n_puntos))
     
