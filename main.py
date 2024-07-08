@@ -202,7 +202,7 @@ def graficar_funcion_con_individuos(valores_x, valores_y, individuos, mejor, peo
     x_individuos = [binario_a_flotante(ind, valor_minimo, valor_maximo, longitud_bits) for ind in individuos]
     y_individuos = [funcion_aptitud(x) for x in x_individuos]
 
-    plt.scatter(x_individuos, y_individuos, color='lightblue', label='Individuos', alpha=0.6)
+    plt.scatter(x_individuos, y_individuos, color='lightblue', label='Individuos', s=90, edgecolor='lightblue')
 
     mejor_x = binario_a_flotante(mejor, valor_minimo, valor_maximo, longitud_bits)
     mejor_y = funcion_aptitud(mejor_x)
