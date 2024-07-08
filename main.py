@@ -3,10 +3,10 @@ import random
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import cv2
 from prettytable import PrettyTable
 import tkinter as tk
 from tkinter import messagebox, scrolledtext
+from video import crear_video
 
 # Definir la función de aptitud
 def funcion_aptitud_log_cos_x(x):
@@ -138,6 +138,7 @@ def ejecutar_algoritmo_genetico():
     if not validar_entradas():
         return
 
+    # Obtengo los valores de las entradas
     valor_inicio = float(entrada_valor_inicio.get())
     valor_fin = float(entrada_valor_fin.get())
     precision = float(entrada_precision.get())
@@ -148,6 +149,7 @@ def ejecutar_algoritmo_genetico():
     cantidad_individuos = int(entrada_cantidad_individuos.get())
     max_poblacion = int(entrada_max_poblacion.get())
 
+    # Calculo la longitud de bits necesaria para representar los valores
     longitud_bits = calcular_longitud_bits(valor_inicio, valor_fin, precision)
     valor_minimo = valor_inicio
     valor_maximo = valor_fin
@@ -163,9 +165,10 @@ def ejecutar_algoritmo_genetico():
     if not os.path.exists(carpeta_video):
         os.makedirs(carpeta_video)
 
+    # Creo los valores de "x" y "y" para la función de aptitud
     valores_x = np.linspace(valor_minimo, valor_maximo, 400)
     valores_y = [funcion_aptitud(x) for x in valores_x]
-
+    # Creo la población inicial
     poblacion = crear_poblacion_inicial(cantidad_individuos, valor_minimo, valor_maximo, longitud_bits)
     mejores_aptitudes = []
     peores_aptitudes = []
@@ -214,7 +217,10 @@ def ejecutar_algoritmo_genetico():
 
     graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, carpeta_grafica_evolucion, maximizar)
     crear_video(carpeta_graficas_generacion, numero_generaciones)
-    
+
+
+# Funciones para graficar
+
 def graficar_funcion_con_individuos(valores_x, valores_y, individuos, mejor, peor, generacion, carpeta, valor_minimo, valor_maximo, maximizar, longitud_bits):
     plt.figure(figsize=(10, 5))
     plt.plot(valores_x, valores_y, label=f'f(x) = {funcion_aptitud.__name__}')
@@ -268,23 +274,9 @@ def graficar_evolucion(mejores_aptitudes, peores_aptitudes, aptitudes_promedio, 
 
     plt.savefig(os.path.join(carpeta, 'Evolucion_Aptitud.png'))
     plt.close()
+    
 
-def crear_video(carpeta, numero_generaciones):
-    carpeta_imagenes = carpeta
-    nombre_video = 'video_de_evolucion/VideoAlgoritmoGenetico.avi'
-
-    imagenes = [f"Generacion_{i}.png" for i in range(1, numero_generaciones + 1)]
-    frame = cv2.imread(os.path.join(carpeta_imagenes, imagenes[0]))
-    height, width, layers = frame.shape
-
-    video = cv2.VideoWriter(
-        nombre_video, cv2.VideoWriter_fourcc(*'DIVX'), 1, (width, height))
-
-    for imagen in imagenes:
-        video.write(cv2.imread(os.path.join(carpeta_imagenes, imagen)))
-
-    cv2.destroyAllWindows()
-    video.release()
+# Interfaz Gráfica
 
 root = tk.Tk()
 root.title("Algoritmo Genético")
