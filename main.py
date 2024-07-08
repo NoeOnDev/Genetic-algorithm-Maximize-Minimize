@@ -10,7 +10,7 @@ from video import crear_video
 
 # Definir la función de aptitud
 def funcion_aptitud_log_cos_x(x):
-    return x * np.cos(x)
+    return np.log(1 + np.abs(x**2)) + 2 * np.cos(x)
 
 funcion_aptitud = funcion_aptitud_log_cos_x
 
