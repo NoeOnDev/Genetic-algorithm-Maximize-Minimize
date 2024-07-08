@@ -37,7 +37,7 @@ def crear_poblacion_inicial(cantidad, valor_minimo, valor_maximo, longitud_bits)
 def seleccionar_pares(poblacion, n):
     pares = []
     for i in range(len(poblacion)):
-        m = random.randint(1, len(poblacion) - 1)
+        m = random.randint(0, n)
         indices_cruce = set()
         intentos = 0
         while len(indices_cruce) < m and intentos < 10 * len(poblacion):
@@ -56,9 +56,10 @@ def cruzar(par, longitud_bits):
     
     if len(puntos_cruce) % 2 != 0:
         puntos_cruce.append(longitud_bits)
-    
+        
     hijo1, hijo2 = list(par[0]), list(par[1])
     
+    # Intercambio de segmentos de bits
     for i in range(0, len(puntos_cruce), 2):
         start, end = puntos_cruce[i], puntos_cruce[i+1]
         hijo1[start:end], hijo2[start:end] = hijo2[start:end], hijo1[start:end]
@@ -68,6 +69,8 @@ def cruzar(par, longitud_bits):
 # Estrategia M2: Intercambio de posición de bits
 def mutar_gen(individuo, prob_mutacion_gen, longitud_bits):
     individuo = list(individuo)
+    
+    # Intercambio de posición de bits
     for i in range(longitud_bits):
         if random.random() < prob_mutacion_gen:
             pos1 = random.randint(0, longitud_bits - 1)
@@ -86,6 +89,7 @@ def podar(poblacion, max_poblacion, valor_minimo, valor_maximo, maximizar, longi
     poblacion_unica.sort(key=lambda ind: evaluar_aptitud(ind, maximizar, valor_minimo, valor_maximo, longitud_bits), reverse=maximizar)
     mejor_individuo = poblacion_unica[0]
     
+    # Elimino los individuos que sobran, manteniendo al mejor individuo de la generación
     if len(poblacion_unica) > max_poblacion:
         num_a_mantener = max_poblacion - 1
         a_mantener = random.sample(poblacion_unica[1:], num_a_mantener)
